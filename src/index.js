@@ -42,20 +42,24 @@ module.exports = function(options){
 	var app = express();
 
 	app.post(paths.login, function(req, res, next){
-		console.log('-------------------------------------------');
-		console.log('login route');
-		var login_data = {};
-		app.emit('login', login_data, function(error, result){
-
+		app.emit('login', req.body || {}, function(error, result){
+			if(error){
+				res.json([error])
+			}
+			else{
+				res.json([null, result]);
+			}
 		})
 	})
 
 	app.post(paths.register, function(req, res, next){
-		console.log('-------------------------------------------');
-		console.log('register route');
-		var register_data = {};
-		app.emit('register', register_data, function(error, result){
-			
+		app.emit('register', req.body || {}, function(error, result){
+			if(error){
+				res.error(error);
+			}
+			else{
+				res.json(result);
+			}
 		})
 	})
 
