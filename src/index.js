@@ -59,7 +59,7 @@ module.exports = function(options){
 		
 	*/
 	app.get(paths.status, function(req, res, next){
-		var obj = req.session.user;
+		var user = req.session.user || {};
 
 	  var ret = {};
 
