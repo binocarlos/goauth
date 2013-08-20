@@ -61,17 +61,22 @@ module.exports = function(options){
 		
 	*/
 	app.get(paths.status, function(req, res, next){
-		var user = req.session.user || {};
+		var user = req.session.user;
 
-	  var ret = {};
 
-	  for(var prop in user){
-	    if(prop.charAt(0)!='_'){
-	      ret[prop] = user[prop];
-	    }
-	  }
+		if(user){
+			var ret = {};
 
-	  res.json(ret);
+			for(var prop in user){
+		    if(prop.charAt(0)!='_'){
+		      ret[prop] = user[prop];
+		    }
+		  }
+
+		  user = ret;
+		}
+	  
+	  res.json(user);
 	})
 
 	/*
@@ -85,7 +90,10 @@ module.exports = function(options){
 				res.json([error])
 			}
 			else{
-				req.session.user = result;
+				req.session.auth = {
+					loggedIn:true,
+					user:result
+				}
 				res.json([null, result, paths.post_login]);
 			}
 		})
@@ -102,7 +110,10 @@ module.exports = function(options){
 				res.json([error])
 			}
 			else{
-				req.session.user = result;
+				req.session.auth = {
+					loggedIn:true,
+					user:result
+				}
 				res.json([null, result, paths.post_register]);
 			}
 		})
