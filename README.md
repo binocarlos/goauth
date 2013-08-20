@@ -1,7 +1,9 @@
 goauth
 ======
 
-An express middleware that handles OAuth and Local logins.
+An express middleware that handles OAuth* and Local logins.
+
+*tbc
 
 ## installation
 
@@ -34,18 +36,14 @@ var app = express();
 
 var auth = goauth({
 	paths:{
+		// post {username:'...',password:'...'}
 		login:'/login',
+		// post {username:'...',password:'...',fullname:'...',email:'...'}
 		register:'/register',
-		connect:'/connect'
-	},
-	// here we activate
-	providers:{
-		facebook:{
-			apikey:'...',
-			secret:'...'
-		}
+		// get
+		status:'/status'
 	}
-
+	
 });
 
 // the user is logging in
@@ -61,16 +59,6 @@ auth.on('login', function(data, callback){
 
 auth.on('register', function(data, callback){
 
-})
-
-// the user is connecting an api to an account
-//	data:
-//		user 				- the top level user account being connected to
-//		provider
-//		password
-
-auth.on('connect', function(data, callback){
-	
 })
 
 // mount the auth server onto the web server
