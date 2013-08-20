@@ -83,11 +83,6 @@ module.exports = function(options){
 				res.json([error])
 			}
 			else{
-				/*
-				
-					we write the user to the session
-					
-				*/
 				req.session.user = result;
 				res.json([null, result]);
 			}
@@ -105,7 +100,8 @@ module.exports = function(options){
 				res.error(error);
 			}
 			else{
-				res.json(result);
+				req.session.user = result;
+				res.json([null, result]);
 			}
 		})
 	})
