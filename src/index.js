@@ -97,7 +97,7 @@ module.exports = function(options){
 	app.post(paths.register, function(req, res, next){
 		app.emit('register', req.body || {}, function(error, result){
 			if(error){
-				res.error(error);
+				res.json([error])
 			}
 			else{
 				req.session.user = result;
