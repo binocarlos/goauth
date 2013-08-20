@@ -25,7 +25,9 @@ module.exports = function(options){
 	options = options || {};
 	
 	var paths = _.defaults(options.paths || {}, {
+		status:'/status',
 		login:'/login',
+		logout:'/logout',
 		register:'/register',
 		connect:'/connect'
 	})
@@ -41,17 +43,62 @@ module.exports = function(options){
 
 	var app = express();
 
+	/*
+	
+		LOGOUT
+		
+	*/
+	app.get(paths.logout, function(req, res, next){
+		req.session.destroy();
+		res.redirect('/');
+	})
+
+	/*
+	
+		USER STATUS
+		
+	*/
+	app.get(paths.status, function(req, res, next){
+		var obj = req.session.user;
+
+	  var ret = {};
+
+	  for(var prop in user){
+	    if(prop.charAt(0)!='_'){
+	      ret[prop] = user[prop];
+	    }
+	  }
+
+	  res.json(ret);
+	})
+
+	/*
+	
+		LOGIN
+		
+	*/
 	app.post(paths.login, function(req, res, next){
 		app.emit('login', req.body || {}, function(error, result){
 			if(error){
 				res.json([error])
 			}
 			else{
+				/*
+				
+					we write the user to the session
+					
+				*/
+				req.session.user = result;
 				res.json([null, result]);
 			}
 		})
 	})
 
+	/*
+	
+		REGISTER
+		
+	*/
 	app.post(paths.register, function(req, res, next){
 		app.emit('register', req.body || {}, function(error, result){
 			if(error){
@@ -63,6 +110,11 @@ module.exports = function(options){
 		})
 	})
 
+	/*
+	
+		CONNECT SERVICES
+		
+	*/
 	app.get(paths.connect + '/:service', authom.app);
 
 	authom.on("auth", function(req, res, data) {
