@@ -26,6 +26,7 @@ module.exports = function(options){
 	
 	var paths = _.defaults(options.paths || {}, {
 		status:'/status',
+		update:'/update',
 		login:'/login',
 		logout:'/logout',
 		register:'/register',
@@ -107,6 +108,29 @@ module.exports = function(options){
 					user:result
 				}
 				res.json([null, result, paths.post_register]);
+			}
+		})
+	})
+
+	/*
+	
+		UPDATE
+		
+	*/
+	app.post(paths.update, function(req, res, next){
+		var auth = req.session.auth;
+		if(!auth.loggedIn){
+			res.statusCode = 401;
+			res.send('not authorized');
+			return;
+		}
+		var user = auth.user;
+		app.emit('update', user, req.sessionreq.body || {}, function(error, result){
+			if(error){
+				res.json([error])
+			}
+			else{
+				res.json([null, true]);
 			}
 		})
 	})
