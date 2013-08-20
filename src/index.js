@@ -29,7 +29,9 @@ module.exports = function(options){
 		login:'/login',
 		logout:'/logout',
 		register:'/register',
-		connect:'/connect'
+		connect:'/connect',
+		post_login:'/',
+		post_register:'/'
 	})
 
 	var providers = options.providers || {};
@@ -84,7 +86,7 @@ module.exports = function(options){
 			}
 			else{
 				req.session.user = result;
-				res.json([null, result]);
+				res.json([null, result, paths.post_login]);
 			}
 		})
 	})
@@ -101,7 +103,7 @@ module.exports = function(options){
 			}
 			else{
 				req.session.user = result;
-				res.json([null, result]);
+				res.json([null, result, paths.post_register]);
 			}
 		})
 	})
