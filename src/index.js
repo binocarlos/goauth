@@ -61,21 +61,13 @@ module.exports = function(options){
 		
 	*/
 	app.get(paths.status, function(req, res, next){
-		var user = req.session.user;
+		var auth = req.session.auth || {};
+		var user = null;
 
-
-		if(user){
-			var ret = {};
-
-			for(var prop in user){
-		    if(prop.charAt(0)!='_'){
-		      ret[prop] = user[prop];
-		    }
-		  }
-
-		  user = ret;
+		if(auth.loggedIn){
+			user = auth.user;
 		}
-	  
+
 	  res.json(user);
 	})
 
