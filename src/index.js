@@ -118,14 +118,18 @@ module.exports = function(options){
 		
 	*/
 	app.post(paths.update, function(req, res, next){
-		var auth = req.session.auth;
+		var auth = req.session.auth || {};
 		if(!auth.loggedIn){
 			res.statusCode = 401;
 			res.send('not authorized');
 			return;
 		}
 		var user = auth.user;
-		app.emit('update', user, req.sessionreq.body || {}, function(error, result){
+		for(var prop in (req.body || {})){
+			auth.user[prop] = req.body[prop];
+		}
+		
+		app.emit('update', user, req.body || {}, function(error, result){
 			if(error){
 				res.json([error])
 			}
