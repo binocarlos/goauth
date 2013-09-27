@@ -78,16 +78,29 @@ module.exports = function(options){
 		
 	*/
 	app.post(paths.login, function(req, res, next){
+
+		var format = req.query.format || 'json';
+
 		app.emit('login', req.body || {}, function(error, result){
 			if(error){
-				res.json([error])
+				if(format=='json'){
+				  res.json([error])
+				} else {
+				  res.redirect('/?message=incorrect_details')
+				}
 			}
 			else{
 				req.session.auth = {
 					loggedIn:true,
 					user:result
 				}
-				res.json([null, result, paths.post_login]);
+
+				if(format=='json'){
+				  res.json([null, result, paths.post_login]);
+				} else {
+				  res.redirect(paths.post_login)
+				}
+				
 			}
 		})
 	})
@@ -98,16 +111,28 @@ module.exports = function(options){
 		
 	*/
 	app.post(paths.register, function(req, res, next){
+
+		var format = req.query.format || 'json';
+		
 		app.emit('register', req.body || {}, function(error, result){
 			if(error){
-				res.json([error])
+				if(format=='json'){
+				  res.json([error])
+				} else {
+				  res.redirect('/?message=incorrect_details')
+				}
 			}
 			else{
 				req.session.auth = {
 					loggedIn:true,
 					user:result
 				}
-				res.json([null, result, paths.post_register]);
+				if(format=='json'){
+				  res.json([null, result, paths.post_register]);
+				} else {
+				  res.redirect(paths.post_register)
+				}
+				
 			}
 		})
 	})
