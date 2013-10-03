@@ -24,6 +24,8 @@ module.exports = function(options){
 
 	options = options || {};
 	
+	var route = options.id || '/auth';
+
 	var paths = _.defaults(options.paths || {}, {
 		status:'/status',
 		update:'/update',
@@ -51,7 +53,7 @@ module.exports = function(options){
 		LOGOUT
 		
 	*/
-	app.get(paths.logout, function(req, res, next){
+	app.get(route + paths.logout, function(req, res, next){
 		req.session.destroy();
 		res.redirect('/');
 	})
@@ -61,7 +63,7 @@ module.exports = function(options){
 		USER STATUS
 		
 	*/
-	app.get(paths.status, function(req, res, next){
+	app.get(route + paths.status, function(req, res, next){
 		var auth = req.session.auth || {};
 		var user = null;
 
@@ -77,7 +79,7 @@ module.exports = function(options){
 		LOGIN
 		
 	*/
-	app.post(paths.login, function(req, res, next){
+	app.post(route + paths.login, function(req, res, next){
 
 		var format = req.query.format || 'json';
 
@@ -110,7 +112,7 @@ module.exports = function(options){
 		REGISTER
 		
 	*/
-	app.post(paths.register, function(req, res, next){
+	app.post(route + paths.register, function(req, res, next){
 
 		var format = req.query.format || 'json';
 		
@@ -142,7 +144,7 @@ module.exports = function(options){
 		UPDATE
 		
 	*/
-	app.post(paths.update, function(req, res, next){
+	app.post(route + paths.update, function(req, res, next){
 		var auth = req.session.auth || {};
 		if(!auth.loggedIn){
 			res.statusCode = 401;
@@ -164,40 +166,46 @@ module.exports = function(options){
 		})
 	})
 
+	authom.on("auth", function(req, res, data) {
+		var connect_data = {};
+		var auth = req.session.auth || {};
+		var user = auth.user;
+		app.emit('connect', user, data, function(error, result){
+			if(error){
+			  res.redirect('/?error=' + error)
+			}
+			else{
+				req.session.auth = {
+					loggedIn:true,
+					user:result
+				}
+
+			  res.redirect(paths.post_login)
+				
+			}
+		})
+	})
+
+	authom.on("error", function(req, res, data) {
+		res.redirect('/');
+	})
+
+	_.each(providers, function(config, name){
+		var options = _.extend(config, {
+			service:name
+		})
+		var service = authom.createServer(options);
+		services[name] = service;
+	})
+
+
 	/*
 	
 		CONNECT SERVICES
 		
 	*/
-	app.get(paths.connect + '/:service', authom.app);
 
-	authom.on("auth", function(req, res, data) {
-		console.log('-------------------------------------------');
-		console.log('authenticated with service!');
-		console.dir(data);
-		var connect_data = {};
-		app.emit('connect', connect_data, function(error, result){
-			
-		})
-	})
-
-	authom.on("error", function(req, res, data) {
-	  console.log('-------------------------------------------');
-		console.log('error with service!');
-		console.dir(data);
-	})
-
-	_.each(providers, function(config, name){
-		var service = authom.createServer({
-			name: name,
-		  service: config.provider || name,
-		  id: config.id,
-		  secret: config.secret,
-		  scope: config.scope || []
-		})
-
-		services[name] = service;
-	})
+	app.get(route + '/:service', authom.app);
 
 	return app;
 }
