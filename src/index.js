@@ -175,10 +175,27 @@ module.exports = function(options){
 			  res.redirect('/?error=' + error)
 			}
 			else{
-				req.session.auth = {
-					loggedIn:true,
-					user:result
+				if(!req.session.auth){
+					var active = {};
+					active[data.service] = true;
+					req.session.auth = {
+						loggedIn:true,
+						user:result,
+						active:active
+					}	
 				}
+				else{
+					var auth = req.session.auth || {};
+					var active = auth.active || {};
+
+					auth.user = result;
+					auth.loggedIn = true;
+					active[data.service] = true;
+					auth.active = active;
+
+					req.session.auth = auth;
+				}
+				
 
 			  res.redirect(paths.post_login)
 				
