@@ -95,7 +95,7 @@ module.exports = function(options){
 				if(format=='json'){
 				  res.json([error])
 				} else {
-				  res.redirect('/?message=incorrect_details')
+				  res.redirect(paths.login + '?message=incorrect_details')
 				}
 			}
 			else{
@@ -128,7 +128,7 @@ module.exports = function(options){
 				if(format=='json'){
 				  res.json([error])
 				} else {
-				  res.redirect('/?message=incorrect_details')
+				  res.redirect(paths.login + '?message=incorrect_details')
 				}
 			}
 			else{
@@ -179,7 +179,7 @@ module.exports = function(options){
 		var user = auth.user;
 		app.emit('connect', user, data, function(error, result){
 			if(error){
-			  res.redirect('/?error=' + error)
+			  res.redirect(paths.login + '?error=' + error)
 			}
 			else{
 				if(!req.session.auth){
@@ -203,7 +203,6 @@ module.exports = function(options){
 					req.session.auth = auth;
 				}
 				
-
 			  res.redirect(paths.post_login)
 				
 			}
@@ -211,7 +210,7 @@ module.exports = function(options){
 	})
 
 	authom.on("error", function(req, res, data) {
-		res.redirect('/');
+		res.redirect(paths.login);
 	})
 
 	_.each(providers, function(config, name){
@@ -230,7 +229,7 @@ module.exports = function(options){
 	  if(req.session.user) {
 	    next(req.session.user);
 	  } else {
-	    res.writeHead(303, {Location: '/login?next=' + encodeURIComponent(authorize_url)});
+	    res.writeHead(303, {Location: paths.login + '?next=' + encodeURIComponent(authorize_url)});
 	    res.end();
 	  }
 	});
