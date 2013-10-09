@@ -101,6 +101,9 @@ module.exports = function(options){
 			else{
 				req.session.auth = {
 					loggedIn:true,
+					active:{
+						digger:true
+					},
 					user:result
 				}
 
@@ -134,6 +137,9 @@ module.exports = function(options){
 			else{
 				req.session.auth = {
 					loggedIn:true,
+					active:{
+						digger:true
+					},
 					user:result
 				}
 				if(format=='json'){
