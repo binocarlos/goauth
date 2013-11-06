@@ -220,11 +220,15 @@ module.exports = function(options){
 	})
 
 	_.each(providers, function(config, name){
-		var options = _.extend(config, {
-			service:name
-		})
-		var service = authom.createServer(options);
-		services[name] = service;
+		config = config || {};
+		if(config.id && config.secret){
+			var options = _.extend(config, {
+				service:name
+			})
+			var service = authom.createServer(options);
+			services[name] = service;	
+		}
+		
 	})
 
 
