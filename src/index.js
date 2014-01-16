@@ -26,7 +26,6 @@ module.exports = function(options){
 	options = options || {};
 	
 	var route = options.id || '/auth';
-	
 
 	var paths = _.defaults(options.paths || {}, {
 		status:'/status',
